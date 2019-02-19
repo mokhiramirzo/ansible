@@ -1,0 +1,32 @@
+---
+- hosts: wservers
+  remote_user: ansible
+  become: yes
+  tasks: 
+  - name: install latest apache
+    yum:
+      name: httpd
+      state: latest
+  - name: write apache config file
+    template:
+      src: /ansible/templates/httpd.conf.j2
+      dest: /etc/httpd/conf/httpd.conf
+    notify:
+    - name: restart apache
+  - name: web content
+    template:
+      src: /ansible/templates/index.html.j2
+      dest: /var/www/html/index.html
+  - name: ensure apache server is running
+    service:
+      name: httpd
+      state: started
+  handlers:
+    - name: httpd
+      service:
+        name: httpd
+        state: restarted
+  
+    
+      
+      
